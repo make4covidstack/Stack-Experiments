@@ -1,7 +1,7 @@
 # Stack-Experiments
 
 Make4Covid uses specific designs of the Prusa face shield headbands that are specifically
-signed off on by our medical staff and facilities.  Make4Covid intends to have all makers
+approved by our medical staff and facilities.  Make4Covid desires to have all makers
 with all types of printers be able to support the effort by scaling their production.
 
 This repo is for testing of stacked Prusa RC3 headbands on all types of printers, starting 
