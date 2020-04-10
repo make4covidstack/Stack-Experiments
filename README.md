@@ -10,7 +10,8 @@ that include the design and printer settings to improve overall headband through
 with stacking.
 
 THESE DESIGNS ARE UNSUPPORTED.  Make4Covid is currently supporting inexperienced makers with
-printing published designs.  These are not official published for general use / support (yet).
+printing the officially published designs.  The files in this repository are not official
+published for general use / support (yet).
 
 If you want to help hop on the zoom channel and talk to Justin Teitelbaum, Patrick Bailey, or 
 anyone there working on stacks :)
