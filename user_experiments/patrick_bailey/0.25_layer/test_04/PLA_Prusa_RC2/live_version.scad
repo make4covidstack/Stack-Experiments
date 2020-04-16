@@ -3,7 +3,7 @@ $fn=100;
 //name of stl file you want to import
 //to stack
 headband_file="PLA_Prusa_RC2_FIXED.stl";
-number_of_headbands = 10;
+number_of_headbands = 2;
 headband_height_in_mm = 20;
 layer_height_between_headbands=0.25;
 
@@ -89,18 +89,40 @@ module stacked_headbands(
 
 module internal_headband_supports(stack_height){
   
-    mirror_copy(){
-      color("#FFAA00"){
-        for(y = [0:len(support_locations)-1]){
-            translate([support_locations[y][0],
-                       support_locations[y][1]]){
-              linear_extrude(stack_height){
-                rotate(support_locations[y][2]){
-                  //square([1.3,2.3], center=true);
-                  circle(circle_support_size);
+  
+    difference(){
+      mirror_copy(){
+        color("#FFAA00"){
+          for(y = [0:len(support_locations)-1]){
+              translate([support_locations[y][0],
+                         support_locations[y][1]]){
+                linear_extrude(stack_height){
+                  rotate(support_locations[y][2]){
+                    //square([1.3,2.3], center=true);
+                    circle(circle_support_size);
+                  }
                 }
               }
+          }
+        }
+      }
+      
+      //Unique thing only for RC2
+      //To remove cylinders from gaps   
+      for(x=[0:number_of_headbands-1]){ 
+        echo(x);
+        translate([0,0,4.13 +
+                   x*(
+                    headband_height_in_mm
+                  + layer_height_between_headbands
+                   )]){
+          linear_extrude(11){
+            translate([0,-18]){
+              scale([1,.75]){
+                circle(82);
+              }
             }
+          }
         }
       }
     }
@@ -145,7 +167,7 @@ module faceshield_knub_front_support(
               collumn_thickness);
   front_shell(inner_circle,
               column_brim_height,
-              column_brim_thickness);
+              column_brim_thickness, true);
                      
   //bridges
   for(x=[1:number_of_headbands-1]){ 
@@ -167,27 +189,54 @@ module faceshield_knub_front_support(
                      
 }
 
-module front_shell(inner_circle,height, thickness){
-  linear_extrude(height){   
-    translate(column_front_brim_offset){
-      difference(){
-        union(){
-          circle(inner_circle + thickness);
-          translate([0,
-                 -inner_circle - thickness,
-                   0]){
-            square(
-                 2*(inner_circle+thickness),
-                      center=true);
+module front_shell(inner_circle,height, thickness, remove){
+  
+  if(remove){
+    linear_extrude(height){   
+      translate(column_front_brim_offset){
+        difference(){
+          union(){
+            circle(inner_circle + thickness);
+            translate([0,
+                   -inner_circle - thickness,
+                     0]){
+              square(
+                   2*(inner_circle+thickness),
+                        center=true);
+            }
           }
+      
+          front_knub_bridge(inner_circle);
+          front_knub_cutoff(); 
+          translate([0,10]){
+            square([30,10], center=true); 
+          }      
         }
-    
-        front_knub_bridge(inner_circle);
-        front_knub_cutoff();     
-      }
+      }  
+    }      
+  }
+  else{
+    linear_extrude(height){   
+      translate(column_front_brim_offset){
+        difference(){
+          union(){
+            circle(inner_circle + thickness);
+            translate([0,
+                   -inner_circle - thickness,
+                     0]){
+              square(
+                   2*(inner_circle+thickness),
+                        center=true);
+            }
+          }
+      
+          front_knub_bridge(inner_circle);
+          front_knub_cutoff();     
+        }
+      }  
     }  
-  } 
-}
+  }
+} 
 
 module front_knub_bridge(inner_circle){
   union(){
@@ -224,7 +273,7 @@ module faceshield_knub_side_support(
               collumn_thickness);
   side_shell(inner_circle,
               column_brim_height,
-              column_brim_thickness);
+              column_brim_thickness, true);
        
        
                      
@@ -251,28 +300,58 @@ module faceshield_knub_side_support(
                      
 }
 
-module side_shell(inner_circle,height, thickness){
-  linear_extrude(height){   
-    translate(column_side_brim_offset){
-      rotate(3){
-        difference(){
-          union(){
-            circle(inner_circle + thickness);
-            translate([inner_circle + thickness,
-                       0,
-                     0]){
-              square(
-                   2*(inner_circle+thickness),
-                        center=true);
+module side_shell(inner_circle,height, thickness, remove){
+  if(remove){
+    linear_extrude(height){   
+      translate(column_side_brim_offset){
+        rotate(3){
+          difference(){
+            union(){
+              circle(inner_circle + thickness);
+              translate([inner_circle + thickness,
+                         0,
+                       0]){
+                square(
+                     2*(inner_circle+thickness),
+                          center=true);
+              }
             }
+        
+            side_knub_bridge(inner_circle);
+            side_knub_cutoff();    
+            rotate(-3){ 
+              translate([-10,0]){
+                square([10,30], center=true); 
+              }
+            }             
           }
-      
-          side_knub_bridge(inner_circle);
-          side_knub_cutoff();              
         }
-      }
-    }  
-  } 
+      }  
+    } 
+  }
+  else{
+    linear_extrude(height){   
+      translate(column_side_brim_offset){
+        rotate(3){
+          difference(){
+            union(){
+              circle(inner_circle + thickness);
+              translate([inner_circle + thickness,
+                         0,
+                       0]){
+                square(
+                     2*(inner_circle+thickness),
+                          center=true);
+              }
+            }
+        
+            side_knub_bridge(inner_circle);
+            side_knub_cutoff();              
+          }
+        }
+      }  
+    } 
+  }
 }
 
 module side_knub_bridge(inner_circle){
